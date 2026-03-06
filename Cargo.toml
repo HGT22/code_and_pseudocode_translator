@@ -1,0 +1,45 @@
+[package]
+name = "code-translator"
+version = "0.1.0"
+edition = "2021"
+authors = ["Héctor García de la Torre, Universitat Rovira i Virgili"]
+description = "Multi-language code translator: C, Python, JavaScript, Pseudocode. Supports Windows, macOS, Linux, iOS, Android, ChromeOS"
+
+[[bin]]
+name = "code-translator"
+path = "src/main.rs"
+
+[lib]
+name = "code_translator"
+path = "src/lib.rs"
+
+[dependencies]
+regex = "1.10"
+lazy_static = "1.4"
+clap = { version = "4.4", features = ["derive"] }
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Platform-specific dependencies
+[target.'cfg(target_os = "ios")'.dependencies]
+objc = "0.2"
+objc_foundation = "0.1"
+
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.21"
+
+# Build profiles
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.release-mobile]
+inherits = "release"
+opt-level = "z"
+lto = "fat"
+
+[profile.release-desktop]
+inherits = "release"
+opt-level = 3

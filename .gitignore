@@ -1,0 +1,27 @@
+# Gitignore for Rust projects
+
+# Compiled binaries
+/target/
+*.exe
+*.dll
+*.dylib
+*.so
+
+# Cargo lock file (for libraries)
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build artifacts
+dist/
+build/
+
+# Environment files
+.env
+.env.local
