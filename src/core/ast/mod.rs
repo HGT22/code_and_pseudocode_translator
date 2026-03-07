@@ -178,7 +178,7 @@ impl fmt::Display for UnaryOperator {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Parameter {
     pub name: String,
     pub data_type: DataType,
