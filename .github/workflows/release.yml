@@ -18,28 +18,24 @@ jobs:
         include:
           - name: Windows x64
             os: windows-latest
-            target: x86_64-pc-windows-msvc
             artifact: code-translator-windows-x64.exe
             binary: code-translator.exe
             package: exe
 
           - name: macOS ARM64
             os: macos-latest
-            target: aarch64-apple-darwin
             artifact: code-translator-macos-arm64.dmg
             binary: code-translator
             package: dmg
 
           - name: macOS x64
-            os: macos-latest
-            target: x86_64-apple-darwin
+            os: macos-13
             artifact: code-translator-macos-x64.dmg
             binary: code-translator
             package: dmg
 
           - name: Linux x64
             os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
             artifact: code-translator-linux-x64.AppImage
             binary: code-translator
             package: appimage
@@ -50,29 +46,27 @@ jobs:
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
 
       - name: Build
-        run: cargo build --release --bin code-translator --target ${{ matrix.target }}
+        run: cargo build --release --bin code-translator
 
       - name: Package EXE
         if: matrix.package == 'exe'
         shell: pwsh
         run: |
-          Copy-Item "target/${{ matrix.target }}/release/${{ matrix.binary }}" "${{ matrix.artifact }}"
+          Copy-Item "target/release/${{ matrix.binary }}" "${{ matrix.artifact }}"
 
       - name: Package DMG
         if: matrix.package == 'dmg'
         run: |
           mkdir -p dist
-          cp "target/${{ matrix.target }}/release/${{ matrix.binary }}" "dist/code-translator"
+          cp "target/release/${{ matrix.binary }}" "dist/code-translator"
           hdiutil create -volname "Code Translator" -srcfolder dist -ov -format UDZO "${{ matrix.artifact }}"
 
       - name: Package AppImage
         if: matrix.package == 'appimage'
         run: |
-          cp "target/${{ matrix.target }}/release/${{ matrix.binary }}" "${{ matrix.artifact }}"
+          cp "target/release/${{ matrix.binary }}" "${{ matrix.artifact }}"
           chmod +x "${{ matrix.artifact }}"
 
       - name: Upload artifact
