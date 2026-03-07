@@ -121,25 +121,24 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.2
 
       - name: Build APK
         run: |
-          gradle -p android wrapper --gradle-version 8.2
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleRelease --stacktrace
-          ls -la app/build/outputs/apk/release || true
-          if [ -f app/build/outputs/apk/release/app-release.apk ]; then
-            cp app/build/outputs/apk/release/app-release.apk ../code-translator.apk
-          elif [ -f app/build/outputs/apk/release/app-release-unsigned.apk ]; then
-            cp app/build/outputs/apk/release/app-release-unsigned.apk ../code-translator.apk
+          gradle -p android assembleRelease --stacktrace
+          ls -la android/app/build/outputs/apk/release || true
+          if [ -f android/app/build/outputs/apk/release/app-release.apk ]; then
+            cp android/app/build/outputs/apk/release/app-release.apk code-translator.apk
+          elif [ -f android/app/build/outputs/apk/release/app-release-unsigned.apk ]; then
+            cp android/app/build/outputs/apk/release/app-release-unsigned.apk code-translator.apk
           else
-            APK_PATH=$(find app/build/outputs/apk/release -name "*release*.apk" | head -n 1)
+            APK_PATH=$(find android/app/build/outputs/apk/release -name "*release*.apk" | head -n 1)
             if [ -z "$APK_PATH" ]; then
-              echo "No APK found in app/build/outputs/apk/release"
+              echo "No APK found in android/app/build/outputs/apk/release"
               exit 1
             fi
-            cp "$APK_PATH" ../code-translator.apk
+            cp "$APK_PATH" code-translator.apk
           fi
 
       - name: Upload artifact
