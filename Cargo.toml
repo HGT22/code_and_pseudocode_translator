@@ -21,11 +21,6 @@ clap = { version = "4.4", features = ["derive"] }
 anyhow = "1.0"
 thiserror = "1.0"
 
-# Platform-specific dependencies
-[target.'cfg(target_os = "ios")'.dependencies]
-objc = "0.2"
-objc-foundation = "0.1"
-
 [target.'cfg(target_os = "android")'.dependencies]
 jni = "0.21"
 

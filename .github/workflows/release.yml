@@ -13,6 +13,7 @@ jobs:
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: Windows x64
@@ -53,7 +54,7 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Build
-        run: cargo build --release --target ${{ matrix.target }}
+        run: cargo build --release --bin code-translator --target ${{ matrix.target }}
 
       - name: Package EXE
         if: matrix.package == 'exe'
@@ -130,26 +131,15 @@ jobs:
           ndk-version: r26c
           add-to-path: true
 
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk --locked
+
       - name: Build Rust Android libraries
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          export PATH="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
-          cargo build --release --target armv7-linux-androideabi --lib
-          cargo build --release --target aarch64-linux-android --lib
-          cargo build --release --target i686-linux-android --lib
-          cargo build --release --target x86_64-linux-android --lib
-
-          mkdir -p android/src/main/jniLibs/armeabi-v7a
-          mkdir -p android/src/main/jniLibs/arm64-v8a
-          mkdir -p android/src/main/jniLibs/x86
-          mkdir -p android/src/main/jniLibs/x86_64
-
-          cp target/armv7-linux-androideabi/release/libcode_translator.so android/src/main/jniLibs/armeabi-v7a/libcode_translator_android.so
-          cp target/aarch64-linux-android/release/libcode_translator.so android/src/main/jniLibs/arm64-v8a/libcode_translator_android.so
-          cp target/i686-linux-android/release/libcode_translator.so android/src/main/jniLibs/x86/libcode_translator_android.so
-          cp target/x86_64-linux-android/release/libcode_translator.so android/src/main/jniLibs/x86_64/libcode_translator_android.so
+          cargo ndk -o android/src/main/jniLibs -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 build --release --lib
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -176,18 +166,16 @@ jobs:
       - name: Setup Rust with iOS targets
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-ios,aarch64-apple-ios-sim
+          targets: aarch64-apple-ios
 
       - name: Build Rust static libraries
         run: |
           cargo build --release --target aarch64-apple-ios --lib
-          cargo build --release --target aarch64-apple-ios-sim --lib
 
       - name: Create XCFramework
         run: |
           xcodebuild -create-xcframework \
             -library target/aarch64-apple-ios/release/libcode_translator.a -headers ios/include \
-            -library target/aarch64-apple-ios-sim/release/libcode_translator.a -headers ios/include \
             -output code-translator-ios.xcframework
           zip -r code-translator-ios.xcframework.zip code-translator-ios.xcframework
 
