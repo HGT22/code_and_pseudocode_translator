@@ -33,11 +33,11 @@ Ver [PLATFORMS.md](PLATFORMS.md) para más detalles sobre cada plataforma.
 - macOS ARM64: [code-translator-macos-arm64.dmg](https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator-macos-arm64.dmg)
 - macOS Intel: [code-translator-macos-x64.dmg](https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator-macos-x64.dmg)
 - Linux x64: [code-translator-linux-x64.AppImage](https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator-linux-x64.AppImage)
-- Android ARM64: [code-translator-android-arm64.apk](https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator-android-arm64.apk)
+- Android (universal): [code-translator.apk](https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator.apk)
+- iOS developers (Xcode framework): [code-translator-ios.xcframework.zip](https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator-ios.xcframework.zip)
 
-Notas:
-- El patrón `releases/latest/download/...` siempre apunta a la última release.
-- Si cambias el nombre de los archivos, también debes actualizar estos enlaces.
+> 📱 **Android**: Ver [android/README.md](android/README.md) para instrucciones de instalación y uso
+> 🍎 **iOS/App Store**: Ver [ios/README.md](ios/README.md) para integrar el framework en una app iOS y publicar en App Store
 
 Plantillas para publicar releases:
 - [RELEASE_TEMPLATE.md](RELEASE_TEMPLATE.md)

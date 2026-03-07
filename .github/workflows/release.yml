@@ -1,0 +1,218 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-desktop:
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - name: Windows x64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact: code-translator-windows-x64.exe
+            binary: code-translator.exe
+            package: exe
+
+          - name: macOS ARM64
+            os: macos-latest
+            target: aarch64-apple-darwin
+            artifact: code-translator-macos-arm64.dmg
+            binary: code-translator
+            package: dmg
+
+          - name: macOS x64
+            os: macos-latest
+            target: x86_64-apple-darwin
+            artifact: code-translator-macos-x64.dmg
+            binary: code-translator
+            package: dmg
+
+          - name: Linux x64
+            os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact: code-translator-linux-x64.AppImage
+            binary: code-translator
+            package: appimage
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Package EXE
+        if: matrix.package == 'exe'
+        shell: pwsh
+        run: |
+          Copy-Item "target/${{ matrix.target }}/release/${{ matrix.binary }}" "${{ matrix.artifact }}"
+
+      - name: Package DMG
+        if: matrix.package == 'dmg'
+        run: |
+          mkdir -p dist
+          cp "target/${{ matrix.target }}/release/${{ matrix.binary }}" "dist/code-translator"
+          hdiutil create -volname "Code Translator" -srcfolder dist -ov -format UDZO "${{ matrix.artifact }}"
+
+      - name: Package AppImage
+        if: matrix.package == 'appimage'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfuse2
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+
+          mkdir -p AppDir/usr/bin
+          cp "target/${{ matrix.target }}/release/${{ matrix.binary }}" AppDir/usr/bin/code-translator
+
+          cat > AppDir/code-translator.desktop << 'EOF'
+          [Desktop Entry]
+          Name=Code Translator
+          Exec=code-translator
+          Type=Application
+          Categories=Development;
+          Icon=utilities-terminal
+          EOF
+
+          cat > AppDir/AppRun << 'EOF'
+          #!/bin/sh
+          exec "$APPDIR/usr/bin/code-translator" "$@"
+          EOF
+          chmod +x AppDir/AppRun
+
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir "${{ matrix.artifact }}"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
+
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Rust with Android targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Android NDK
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26c
+          add-to-path: true
+
+      - name: Build Rust Android libraries
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          export PATH="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
+          cargo build --release --target armv7-linux-androideabi --lib
+          cargo build --release --target aarch64-linux-android --lib
+          cargo build --release --target i686-linux-android --lib
+          cargo build --release --target x86_64-linux-android --lib
+
+          mkdir -p android/src/main/jniLibs/armeabi-v7a
+          mkdir -p android/src/main/jniLibs/arm64-v8a
+          mkdir -p android/src/main/jniLibs/x86
+          mkdir -p android/src/main/jniLibs/x86_64
+
+          cp target/armv7-linux-androideabi/release/libcode_translator.so android/src/main/jniLibs/armeabi-v7a/libcode_translator_android.so
+          cp target/aarch64-linux-android/release/libcode_translator.so android/src/main/jniLibs/arm64-v8a/libcode_translator_android.so
+          cp target/i686-linux-android/release/libcode_translator.so android/src/main/jniLibs/x86/libcode_translator_android.so
+          cp target/x86_64-linux-android/release/libcode_translator.so android/src/main/jniLibs/x86_64/libcode_translator_android.so
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build APK
+        run: |
+          gradle -p android assembleRelease
+          APK_PATH=$(find android/build/outputs/apk/release -name "*release*.apk" | head -n 1)
+          cp "$APK_PATH" code-translator.apk
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-translator.apk
+          path: code-translator.apk
+
+  build-ios-framework:
+    name: Build iOS XCFramework
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust with iOS targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim
+
+      - name: Build Rust static libraries
+        run: |
+          cargo build --release --target aarch64-apple-ios --lib
+          cargo build --release --target aarch64-apple-ios-sim --lib
+
+      - name: Create XCFramework
+        run: |
+          xcodebuild -create-xcframework \
+            -library target/aarch64-apple-ios/release/libcode_translator.a -headers ios/include \
+            -library target/aarch64-apple-ios-sim/release/libcode_translator.a -headers ios/include \
+            -output code-translator-ios.xcframework
+          zip -r code-translator-ios.xcframework.zip code-translator-ios.xcframework
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-translator-ios.xcframework.zip
+          path: code-translator-ios.xcframework.zip
+
+  release:
+    name: Create GitHub Release
+    needs: [build-desktop, build-android, build-ios-framework]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

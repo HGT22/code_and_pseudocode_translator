@@ -12,17 +12,18 @@ Recommended asset names:
 - code-translator-macos-arm64.dmg
 - code-translator-macos-x64.dmg
 - code-translator-linux-x64.AppImage
-- code-translator-android-arm64.apk
+- code-translator.apk
+- code-translator-ios.xcframework.zip
 
 ## 3) Tag and push
-- git tag v0.1.0
+- git tag v0.1.2
 - git push origin main
-- git push origin v0.1.0
+- git push origin v0.1.2
 
 ## 4) Create GitHub Release
 - Go to GitHub → Releases → Draft new release
-- Choose tag: v0.1.0
-- Title: Release v0.1.0 - Initial Public Release
+- Choose tag: v0.1.2
+- Title: Release v0.1.2
 - Paste content from RELEASE_TEMPLATE.md
 - Upload assets (same names as above)
 - Publish release
@@ -33,7 +34,8 @@ Check these links open/download correctly:
 - https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator-macos-arm64.dmg
 - https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator-macos-x64.dmg
 - https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator-linux-x64.AppImage
-- https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator-android-arm64.apk
+- https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator.apk
+- https://github.com/HGT22/code_and_pseudocode_translator/releases/latest/download/code-translator-ios.xcframework.zip
 
 ## 6) Post-release
 - Update README if needed

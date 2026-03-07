@@ -2,6 +2,14 @@
 pub mod core;
 pub mod cli;
 
+// Android FFI
+#[cfg(target_os = "android")]
+pub mod android_ffi;
+
+// iOS FFI
+#[cfg(target_os = "ios")]
+pub mod ios_ffi;
+
 pub use core::{ast, lexer, parser, transpiler};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
