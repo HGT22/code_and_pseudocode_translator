@@ -143,15 +143,18 @@ impl CodeTranslator {
     fn normalize_common_c_like(&self, code: &str) -> String {
         let mut normalized = code.to_string();
 
-        // Remove C/C++ preprocessor directives
-        let preprocessor_re = Regex::new(r"(?m)^\s*#.*$").unwrap();
+        // Remove C/C++ preprocessor directives first
+        let preprocessor_re = Regex::new(r"(?m)^\s*#.*\n?").unwrap();
         normalized = preprocessor_re.replace_all(&normalized, "").to_string();
 
-        // Fix C-style functions where { is on the next line
+        // Remove empty lines at the beginning
+        normalized = normalized.trim_start().to_string();
+
+        // Fix C-style functions where { is on the next line (more flexible pattern)
         let brace_newline_re = Regex::new(
-            r"(?m)^(\s*(?:public\s+|private\s+|protected\s+|static\s+|final\s+|virtual\s+|override\s+|inline\s+|extern\s+|async\s+)*(?:void|int|float|double|char|bool|boolean|String|string|long|short|byte|auto|var|let|const|fn|def|func|fun)\s+[A-Za-z_][A-Za-z0-9_]*\s*\([^)]*\))\s*\n\s*\{"
+            r"(?m)((?:public|private|protected|static|final|virtual|override|inline|extern|async)\s+)*(?:void|int|float|double|char|bool|boolean|String|string|long|short|byte|auto|var|let|const|fn|def|func|fun)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\n\s*\{"
         ).unwrap();
-        normalized = brace_newline_re.replace_all(&normalized, "$1 {").to_string();
+        normalized = brace_newline_re.replace_all(&normalized, "$1$2($3) {").to_string();
 
         let function_re = Regex::new(
             r"(?m)^\s*(?:public\s+|private\s+|protected\s+|static\s+|final\s+|virtual\s+|override\s+|inline\s+|extern\s+|async\s+)*(?:void|int|float|double|char|bool|boolean|String|string|long|short|byte|auto|var|let|const|fn|def|func|fun)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{" 
