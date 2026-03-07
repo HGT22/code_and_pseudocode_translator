@@ -19,10 +19,10 @@ fn main() {
     
     loop {
         println!("\n--- MENU ---");
-        println!("0. Info");
         println!("1. Traducir código");
         println!("2. Ver lenguajes soportados");
-        println!("3. Salir");
+        println!("3. Info");
+        println!("0. Salir");
         print!("Selecciona una opción: ");
         io::stdout().flush().unwrap();
 
@@ -30,10 +30,10 @@ fn main() {
         io::stdin().read_line(&mut choice).unwrap();
 
         match choice.trim() {
-            "0" => show_info_menu(),
             "1" => commands::translate_code(&mut translator),
             "2" => show_supported_languages(),
-            "3" => {
+            "3" => show_info_menu(),
+            "0" => {
                 println!("\n¡Hasta luego!");
                 break;
             }

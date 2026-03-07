@@ -150,6 +150,9 @@ impl CodeTranslator {
         // Remove empty lines at the beginning
         normalized = normalized.trim_start().to_string();
 
+        // Replace (void) with () in function parameters
+        normalized = normalized.replace("(void)", "()");
+
         // Fix C-style functions where { is on the next line (more flexible pattern)
         let brace_newline_re = Regex::new(
             r"(?m)((?:public|private|protected|static|final|virtual|override|inline|extern|async)\s+)*(?:void|int|float|double|char|bool|boolean|String|string|long|short|byte|auto|var|let|const|fn|def|func|fun)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\n\s*\{"
