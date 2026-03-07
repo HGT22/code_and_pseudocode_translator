@@ -110,14 +110,22 @@ fn show_info_menu() {
 }
 
 fn show_traductor_info() {
-    let traductor_path = "Traductor_code_pseudo.rs";
+    // Try multiple possible paths for Traductor_code_pseudo.rs
+    let possible_paths = vec![
+        "Traductor_code_pseudo.rs",
+        "../Traductor_code_pseudo.rs",
+        "../../Traductor_code_pseudo.rs",
+        "./Traductor_code_pseudo.rs",
+    ];
     
     println!("\n╔═══════════════════════════════════════════════════════════╗");
     println!("║                    TRADUCTOR INFO                         ║");
     println!("╚═══════════════════════════════════════════════════════════╝\n");
     
-    match fs::read_to_string(traductor_path) {
-        Ok(content) => {
+    let mut content_found = false;
+    for traductor_path in &possible_paths {
+        if let Ok(content) = fs::read_to_string(traductor_path) {
+            content_found = true;
             // Mostrar solo las líneas con println! para mostrar la info
             for line in content.lines() {
                 if line.trim().starts_with("println!") {
@@ -134,9 +142,12 @@ fn show_traductor_info() {
                     }
                 }
             }
+            break;
         }
-        Err(_) => {
-            println!("⚠️  No se pudo leer el archivo Traductor_code_pseudo.rs");
+    }
+    
+    if !content_found {
+        println!("⚠️  No se pudo leer el archivo Traductor_code_pseudo.rs en ninguna ubicación");
             println!("📄 Información del proyecto Code Translator");
             println!("   - Traductor multi-lenguaje de código");
             println!("   - Soporta múltiples lenguajes de programación");

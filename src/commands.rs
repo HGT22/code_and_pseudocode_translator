@@ -59,13 +59,15 @@ pub fn translate_code(translator: &mut CodeTranslator) {
     println!("\n⏳ Traduciendo...");
     match translator.translate(&code, source_lang, target_lang) {
         Ok(translated) => {
-            println!("\n✅ CÓDIGO TRADUCIDO:");
-            println!("─────────────────────────────────────────");
-            println!("{}", translated);
-            println!("─────────────────────────────────────────");
+            println!("\n✅ CÓDIGO TRADUCIDO ({}):", target_lang);
+            println!("═════════════════════════════════════════");
+            println!("{}", translated.trim());
+            println!("═════════════════════════════════════════");
+            println!("📊 Total de líneas: {}", translated.lines().count());
         }
         Err(e) => {
             println!("❌ Error en la traducción: {}", e);
+            println!("💡 Verifica que el código de entrada sea válido para {}", source_lang);
         }
     }
 }
