@@ -15,5 +15,3 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Code Translator"
-include ':app'
-project(':app').projectDir = file('.')

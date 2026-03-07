@@ -124,9 +124,12 @@ jobs:
 
       - name: Build APK
         run: |
-          gradle -p android assembleRelease
-          APK_PATH=$(find android/build/outputs/apk/release -name "*release*.apk" | head -n 1)
-          cp "$APK_PATH" code-translator.apk
+          gradle -p android wrapper --gradle-version 8.2
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+          APK_PATH=$(find build/outputs/apk/release -name "*release*.apk" | head -n 1)
+          cp "$APK_PATH" ../code-translator.apk
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
