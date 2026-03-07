@@ -110,47 +110,25 @@ fn show_info_menu() {
 }
 
 fn show_traductor_info() {
-    // Try multiple possible paths for Traductor_code_pseudo.rs
-    let possible_paths = vec![
-        "Traductor_code_pseudo.rs",
-        "../Traductor_code_pseudo.rs",
-        "../../Traductor_code_pseudo.rs",
-        "./Traductor_code_pseudo.rs",
-    ];
-    
     println!("\n╔═══════════════════════════════════════════════════════════╗");
     println!("║                    TRADUCTOR INFO                         ║");
     println!("╚═══════════════════════════════════════════════════════════╝\n");
-    
-    let mut content_found = false;
-    for traductor_path in &possible_paths {
-        if let Ok(content) = fs::read_to_string(traductor_path) {
-            content_found = true;
-            // Mostrar solo las líneas con println! para mostrar la info
-            for line in content.lines() {
-                if line.trim().starts_with("println!") {
-                    // Extraer el texto entre comillas
-                    if let Some(start) = line.find('"') {
-                        if let Some(end) = line.rfind('"') {
-                            if start < end {
-                                let text = &line[start + 1..end];
-                                // Procesar caracteres de escape básicos
-                                let text = text.replace("\\n", "\n");
-                                println!("{}", text);
-                            }
-                        }
+
+    let traductor_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("Traductor_code_pseudo.rs");
+    let content = fs::read_to_string(&traductor_path)
+        .unwrap_or_else(|_| include_str!("../Traductor_code_pseudo.rs").to_string());
+
+    for line in content.lines() {
+        if line.trim().starts_with("println!") {
+            if let Some(start) = line.find('"') {
+                if let Some(end) = line.rfind('"') {
+                    if start < end {
+                        let text = &line[start + 1..end];
+                        let text = text.replace("\\n", "\n");
+                        println!("{}", text);
                     }
                 }
             }
-            break;
-        }
-    }
-    
-    if !content_found {
-        println!("⚠️  No se pudo leer el archivo Traductor_code_pseudo.rs en ninguna ubicación");
-            println!("📄 Información del proyecto Code Translator");
-            println!("   - Traductor multi-lenguaje de código");
-            println!("   - Soporta múltiples lenguajes de programación");
         }
     }
 }
