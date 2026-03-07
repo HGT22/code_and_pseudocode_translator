@@ -127,9 +127,20 @@ jobs:
           gradle -p android wrapper --gradle-version 8.2
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
-          APK_PATH=$(find build/outputs/apk/release -name "*release*.apk" | head -n 1)
-          cp "$APK_PATH" ../code-translator.apk
+          ./gradlew assembleRelease --stacktrace
+          ls -la build/outputs/apk/release || true
+          if [ -f build/outputs/apk/release/app-release.apk ]; then
+            cp build/outputs/apk/release/app-release.apk ../code-translator.apk
+          elif [ -f build/outputs/apk/release/app-release-unsigned.apk ]; then
+            cp build/outputs/apk/release/app-release-unsigned.apk ../code-translator.apk
+          else
+            APK_PATH=$(find build/outputs/apk/release -name "*release*.apk" | head -n 1)
+            if [ -z "$APK_PATH" ]; then
+              echo "No APK found in build/outputs/apk/release"
+              exit 1
+            fi
+            cp "$APK_PATH" ../code-translator.apk
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
