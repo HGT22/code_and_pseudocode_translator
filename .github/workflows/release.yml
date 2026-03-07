@@ -71,33 +71,9 @@ jobs:
 
       - name: Package AppImage
         if: matrix.package == 'appimage'
-        env:
-          APPIMAGE_EXTRACT_AND_RUN: 1
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libfuse2
-          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-          chmod +x appimagetool-x86_64.AppImage
-
-          mkdir -p AppDir/usr/bin
-          cp "target/${{ matrix.target }}/release/${{ matrix.binary }}" AppDir/usr/bin/code-translator
-
-          cat > AppDir/code-translator.desktop << 'EOF'
-          [Desktop Entry]
-          Name=Code Translator
-          Exec=code-translator
-          Type=Application
-          Categories=Development;
-          Icon=utilities-terminal
-          EOF
-
-          cat > AppDir/AppRun << 'EOF'
-          #!/bin/sh
-          exec "$APPDIR/usr/bin/code-translator" "$@"
-          EOF
-          chmod +x AppDir/AppRun
-
-          ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir "${{ matrix.artifact }}"
+          cp "target/${{ matrix.target }}/release/${{ matrix.binary }}" "${{ matrix.artifact }}"
+          chmod +x "${{ matrix.artifact }}"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
