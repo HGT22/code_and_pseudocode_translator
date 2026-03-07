@@ -1,4 +1,4 @@
-use std::io::{self, Write};
+﻿use std::io::{self, Write};
 use std::fs;
 use std::path::Path;
 use std::time::{Duration, Instant};
@@ -10,20 +10,20 @@ mod commands;
 fn main() {
     let language_count = Language::supported_languages().len();
 
-    println!("╔═══════════════════════════════════════════╗");
-    println!("║      CODE TRANSLATOR - Multi-Language     ║");
-    println!("║ {} lenguajes + pseudolenguajes soportados ║", language_count);
-    println!("╚═══════════════════════════════════════════╝\n");
+    println!("â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—");
+    println!("â•‘      CODE TRANSLATOR - Multi-Language     â•‘");
+    println!("â•‘ {} lenguajes + pseudolenguajes soportados â•‘", language_count);
+    println!("â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n");
 
     let mut translator = CodeTranslator::new();
     
     loop {
         println!("\n--- MENU ---");
-        println!("1. Traducir código");
+        println!("1. Traducir cÃ³digo");
         println!("2. Ver lenguajes soportados");
         println!("3. Info");
         println!("0. Salir");
-        print!("Selecciona una opción: ");
+        print!("Selecciona una opciÃ³n: ");
         io::stdout().flush().unwrap();
 
         let mut choice = String::new();
@@ -34,19 +34,19 @@ fn main() {
             "2" => show_supported_languages(),
             "3" => show_info_menu(),
             "0" => {
-                println!("\n¡Hasta luego!");
+                println!("\nÂ¡Hasta luego!");
                 break;
             }
-            _ => println!("Opción no válida. Intenta de nuevo."),
+            _ => println!("OpciÃ³n no vÃ¡lida. Intenta de nuevo."),
         }
     }
 }
 
 fn show_supported_languages() {
-    println!("\n📋 LENGUAJES SOPORTADOS:");
+    println!("\nðŸ“‹ LENGUAJES SOPORTADOS:");
     println!("  Entrada / Salida:");
     for lang in Language::supported_languages() {
-        println!("    • {}", lang);
+        println!("    â€¢ {}", lang);
     }
 }
 
@@ -57,23 +57,23 @@ fn show_info_menu() {
     println!("\n--- SUBMENU INFO ---");
     println!("0. Return to menu");
     println!("1. Info code lines");
-    println!("\n⏳ Selección automática en 60 segundos...");
+    println!("\nâ³ SelecciÃ³n automÃ¡tica en 60 segundos...");
     
     let start_time = Instant::now();
     let timeout = Duration::from_secs(60);
     
     loop {
-        print!("\nSelecciona una opción: ");
+        print!("\nSelecciona una opciÃ³n: ");
         io::stdout().flush().unwrap();
         
         // Verificar si ha pasado el timeout
         if start_time.elapsed() >= timeout {
-            println!("\n⏱️ Tiempo agotado, mostrando info de líneas de código...");
+            println!("\nâ±ï¸ Tiempo agotado, mostrando info de lÃ­neas de cÃ³digo...");
             show_code_lines_info();
             return;
         }
         
-        // Intentar leer con un pequeño delay para verificar timeout
+        // Intentar leer con un pequeÃ±o delay para verificar timeout
         let mut choice = String::new();
         let stdin = io::stdin();
         
@@ -90,18 +90,18 @@ fn show_info_menu() {
             Ok(input) => {
                 match input.trim() {
                     "0" => {
-                        println!("Volviendo al menú principal...");
+                        println!("Volviendo al menÃº principal...");
                         return;
                     }
                     "1" => {
                         show_code_lines_info();
                         return;
                     }
-                    _ => println!("Opción no válida. Intenta de nuevo."),
+                    _ => println!("OpciÃ³n no vÃ¡lida. Intenta de nuevo."),
                 }
             }
             Err(_) => {
-                println!("\n⏱️ Tiempo agotado, mostrando info de líneas de código...");
+                println!("\nâ±ï¸ Tiempo agotado, mostrando info de lÃ­neas de cÃ³digo...");
                 show_code_lines_info();
                 return;
             }
@@ -110,46 +110,55 @@ fn show_info_menu() {
 }
 
 fn show_traductor_info() {
-    println!("\n╔═══════════════════════════════════════════════════════════╗");
-    println!("║                    TRADUCTOR INFO                         ║");
-    println!("╚═══════════════════════════════════════════════════════════╝\n");
-
-    let traductor_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("Traductor_code_pseudo.rs");
-    let content = fs::read_to_string(&traductor_path)
-        .unwrap_or_else(|_| include_str!("../Traductor_code_pseudo.rs").to_string());
-
-    for line in content.lines() {
-        if line.trim().starts_with("println!") {
-            if let Some(start) = line.find('"') {
-                if let Some(end) = line.rfind('"') {
-                    if start < end {
-                        let text = &line[start + 1..end];
-                        let text = text.replace("\\n", "\n");
-                        println!("{}", text);
-                    }
-                }
-            }
-        }
-    }
+    println!("\n");
+    println!("                    TRADUCTOR INFO                         ");
+    println!("\n");
+    println!("Hello World!");
+    println!("This is a pseudo-code translator.");
+    println!("It can translate code between multiple programming languages and pseudocode formats.");
+    println!("Supported languages include C, C++, Python, Java, JavaScript, Rust, Swift, and more.");
+    println!("You can input code in one language and get the equivalent code in another language.");
+    println!("The translator normalizes syntax and constructs to ensure accurate translations.");
+    println!("Try it out and see how it works!");
+    println!("Note: This is a simplified demonstration and may not cover all edge cases or language features.");
+    println!("Happy coding!");
+    println!(" ");
+    println!(" ");
+    println!("Socialmedia:");
+    println!("GitHub: https://github.com/HGT22");
+    println!("LinkedIn: https://www.linkedin.com/in/héctor-garcía-de-la-torre-132296388?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app");
+    println!("Twitter: https://twitter.com/hgtdev22");
+    println!("Instagram: https://www.instagram.com/hgtdev22/");
+    println!("TikTok: https://www.tiktok.com/@hgtdev22");
+    println!("YouTube: https://www.youtube.com/@hgtdev22");
+    println!(" ");
+    println!("Contact:");
+    println!("Email: hgarcia2008a@gmail.com");
+    println!(" ");
+    println!("Thank you for using the pseudo-code translator!");
+    println!("Feel free to contribute or report issues on GitHub.");
+    println!("Goodbye!");
+    println!(" ");
+    println!(" ");
 }
 
 fn show_code_lines_info() {
     let project_root = ".";
     let total_lines = count_code_lines(project_root);
     
-    println!("\n╔═══════════════════════════════════════════════════════════╗");
-    println!("║          ESTADÍSTICAS DEL PROYECTO CODE TRANSLATOR       ║");
-    println!("╚═══════════════════════════════════════════════════════════╝\n");
+    println!("\nâ•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—");
+    println!("â•‘          ESTADÃSTICAS DEL PROYECTO CODE TRANSLATOR       â•‘");
+    println!("â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n");
     
-    println!("📊 Total de líneas de código en el proyecto: {} líneas\n", total_lines);
+    println!("ðŸ“Š Total de lÃ­neas de cÃ³digo en el proyecto: {} lÃ­neas\n", total_lines);
     
-    println!("📁 Archivos analizados:");
-    println!("   • Archivos Rust (.rs)");
-    println!("   • Archivos C (.c, .h)");
-    println!("   • Archivos de configuración (.toml, .yml, .gradle, .xml, .properties)");
-    println!("   • Archivos de documentación (.md)");
-    println!("   • Archivos Kotlin (.kt)");
-    println!("   • Archivos de script (.sh, .ps1)\n");
+    println!("ðŸ“ Archivos analizados:");
+    println!("   â€¢ Archivos Rust (.rs)");
+    println!("   â€¢ Archivos C (.c, .h)");
+    println!("   â€¢ Archivos de configuraciÃ³n (.toml, .yml, .gradle, .xml, .properties)");
+    println!("   â€¢ Archivos de documentaciÃ³n (.md)");
+    println!("   â€¢ Archivos Kotlin (.kt)");
+    println!("   â€¢ Archivos de script (.sh, .ps1)\n");
     
     // Intentar compilar y ejecutar el programa C si existe
     #[cfg(target_os = "windows")]
@@ -157,7 +166,7 @@ fn show_code_lines_info() {
         compile_and_run_c_program(total_lines);
     }
     
-    println!("\n⏳ Presiona Enter para continuar...");
+    println!("\nâ³ Presiona Enter para continuar...");
     let mut wait = String::new();
     io::stdin().read_line(&mut wait).unwrap();
 }
@@ -204,7 +213,7 @@ fn compile_and_run_c_program(total_lines: usize) {
         return;
     }
     
-    println!("🔨 Compilando programa C auxiliar...");
+    println!("ðŸ”¨ Compilando programa C auxiliar...");
     
     // Crear un archivo con la variable externa
     let var_file = "total_lines_var.c";
@@ -213,20 +222,20 @@ fn compile_and_run_c_program(total_lines: usize) {
         return;
     }
     
-    // Compilar con gcc si está disponible
+    // Compilar con gcc si estÃ¡ disponible
     let output = Command::new("gcc")
         .args(&[c_file, var_file, "-o", "lineas_totales_proyecto.exe"])
         .output();
     
     if output.is_ok() && output.unwrap().status.success() {
-        println!("✅ Compilación exitosa, ejecutando...\n");
+        println!("âœ… CompilaciÃ³n exitosa, ejecutando...\n");
         let _ = Command::new("lineas_totales_proyecto.exe").status();
         
         // Limpiar archivos temporales
         let _ = fs::remove_file("lineas_totales_proyecto.exe");
         let _ = fs::remove_file(var_file);
     } else {
-        println!("⚠️  No se pudo compilar el programa C (gcc no disponible)");
+        println!("âš ï¸  No se pudo compilar el programa C (gcc no disponible)");
     }
 }
 
@@ -240,7 +249,7 @@ fn compile_and_run_c_program(total_lines: usize) {
         return;
     }
     
-    println!("🔨 Compilando programa C auxiliar...");
+    println!("ðŸ”¨ Compilando programa C auxiliar...");
     
     // Crear un archivo con la variable externa
     let var_file = "total_lines_var.c";
@@ -255,13 +264,13 @@ fn compile_and_run_c_program(total_lines: usize) {
         .output();
     
     if output.is_ok() && output.unwrap().status.success() {
-        println!("✅ Compilación exitosa, ejecutando...\n");
+        println!("âœ… CompilaciÃ³n exitosa, ejecutando...\n");
         let _ = Command::new("./lineas_totales_proyecto").status();
         
         // Limpiar archivos temporales
         let _ = fs::remove_file("lineas_totales_proyecto");
         let _ = fs::remove_file(var_file);
     } else {
-        println!("⚠️  No se pudo compilar el programa C (gcc no disponible)");
+        println!("âš ï¸  No se pudo compilar el programa C (gcc no disponible)");
     }
 }
