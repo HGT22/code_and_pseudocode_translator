@@ -117,7 +117,7 @@ jobs:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          cargo ndk -o android/src/main/jniLibs -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 build --release --lib
+          cargo ndk -o android/app/src/main/jniLibs -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 build --release --lib
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -128,15 +128,15 @@ jobs:
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease --stacktrace
-          ls -la build/outputs/apk/release || true
-          if [ -f build/outputs/apk/release/app-release.apk ]; then
-            cp build/outputs/apk/release/app-release.apk ../code-translator.apk
-          elif [ -f build/outputs/apk/release/app-release-unsigned.apk ]; then
-            cp build/outputs/apk/release/app-release-unsigned.apk ../code-translator.apk
+          ls -la app/build/outputs/apk/release || true
+          if [ -f app/build/outputs/apk/release/app-release.apk ]; then
+            cp app/build/outputs/apk/release/app-release.apk ../code-translator.apk
+          elif [ -f app/build/outputs/apk/release/app-release-unsigned.apk ]; then
+            cp app/build/outputs/apk/release/app-release-unsigned.apk ../code-translator.apk
           else
-            APK_PATH=$(find build/outputs/apk/release -name "*release*.apk" | head -n 1)
+            APK_PATH=$(find app/build/outputs/apk/release -name "*release*.apk" | head -n 1)
             if [ -z "$APK_PATH" ]; then
-              echo "No APK found in build/outputs/apk/release"
+              echo "No APK found in app/build/outputs/apk/release"
               exit 1
             fi
             cp "$APK_PATH" ../code-translator.apk
